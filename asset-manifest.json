@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/skills-competencies-chart/static/css/main.1f9f699d.css",
-    "main.js": "/skills-competencies-chart/static/js/main.5512b8cb.js",
+    "main.js": "/skills-competencies-chart/static/js/main.992c605c.js",
     "static/media/ALSHauss-Bold.woff": "/skills-competencies-chart/static/media/ALSHauss-Bold.f74197c170ceda63d4d0.woff",
     "static/media/ALSHauss-Bold.woff2": "/skills-competencies-chart/static/media/ALSHauss-Bold.da56a0bd437865f612af.woff2",
     "index.html": "/skills-competencies-chart/index.html",
     "main.1f9f699d.css.map": "/skills-competencies-chart/static/css/main.1f9f699d.css.map",
-    "main.5512b8cb.js.map": "/skills-competencies-chart/static/js/main.5512b8cb.js.map"
+    "main.992c605c.js.map": "/skills-competencies-chart/static/js/main.992c605c.js.map"
   },
   "entrypoints": [
     "static/css/main.1f9f699d.css",
-    "static/js/main.5512b8cb.js"
+    "static/js/main.992c605c.js"
   ]
 }
