@@ -5,10 +5,12 @@ import { DATA } from './data/data.js';
 export const App = () => {
   return (
     <>
-      <div className="wrapper">
-        <h2>Круговая диаграмма связей</h2>
-        <CircularGraph />
-      </div>
+      <main>
+        <div className="wrapper">
+          <h2>Круговая диаграмма связей</h2>
+          <CircularGraph />
+        </div>
+      </main>
     </>
   );
 };
@@ -68,6 +70,7 @@ const CircularGraph = () => {
     const data = {
       nodes: [],
       links: [],
+      persistentLinks: [],
     };
 
     // Группируем узлы по категориям
@@ -167,12 +170,46 @@ const CircularGraph = () => {
       person.mainSkills.forEach((skill) => {
         let targetId;
         data.nodes.filter((el) => (el.name === skill ? (targetId = el.id) : null));
-        data.links.push({ source: sourceId, target: targetId, lineStyle: { color: '#8F59B9' } });
+        data.links.push({
+          source: sourceId,
+          target: targetId,
+          lineStyle: { color: '#8F59B9' },
+          persistent: false,
+        });
       });
       person.otherSkills.forEach((skill) => {
         let targetId;
         data.nodes.filter((el) => (el.name === skill ? (targetId = el.id) : null));
-        data.links.push({ source: sourceId, target: targetId, lineStyle: { color: '#FF7A00' } });
+        data.links.push({
+          source: sourceId,
+          target: targetId,
+          lineStyle: { color: '#FF7A00' },
+          persistent: false,
+        });
+      });
+    });
+
+    // Добавление связей между узлами person для формирования окружности
+    sortedData.forEach((person, index) => {
+      const sourceId = index.toString();
+      const nextIndex = (index + 1) % totalPersons;
+      data.persistentLinks.push({
+        source: sourceId,
+        target: nextIndex.toString(),
+        lineStyle: { color: '#ADADAD', curveness: 0.2 },
+        persistent: true,
+      });
+    });
+
+    // Добавление связей между узлами skills для формирования окружности
+    skills.forEach((skill, index) => {
+      const skillIndex = index + totalPersons;
+      const nextSkillIndex = ((index + 1) % totalSkills) + totalPersons;
+      data.persistentLinks.push({
+        source: skillIndex.toString(),
+        target: nextSkillIndex.toString(),
+        lineStyle: { color: '#ADADAD', curveness: 0.1 },
+        persistent: true,
       });
     });
 
@@ -212,7 +249,14 @@ const CircularGraph = () => {
               }
               return node;
             }),
-            links: currentVisibleLinks,
+            links: [
+              ...data.persistentLinks,
+              ...data.links.filter((link) =>
+                currentVisibleLinks.some(
+                  (l) => l.source === link.source && l.target === link.target,
+                ),
+              ),
+            ],
             symbolSize: 28,
             height: '530px',
             label: {
@@ -252,7 +296,6 @@ const CircularGraph = () => {
 
     // Обработчик на элементе графа
     myChart.on('click', (params) => {
-      console.log(params.data.id);
       if (params.data && params.data.category === 'person') {
         const personName = params.data.name;
 
@@ -282,7 +325,7 @@ const CircularGraph = () => {
     };
   }, [activeNode, currentVisibleLinks, sortedData]);
 
-  return <div ref={chartRef} style={{ width: '1000px', height: '1000px' }} />;
+  return <div ref={chartRef} style={{ width: '1000px', height: '800px' }} />;
 };
 
 export default CircularGraph;
