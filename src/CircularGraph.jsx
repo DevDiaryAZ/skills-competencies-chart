@@ -2,19 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as echarts from 'echarts';
 import { DATA } from './data/data.js';
 
-export const App = () => {
-  return (
-    <>
-      <main>
-        <div className="wrapper">
-          <h2>Круговая диаграмма связей</h2>
-          <CircularGraph />
-        </div>
-      </main>
-    </>
-  );
-};
-
 const CircularGraph = () => {
   const chartRef = useRef(null);
   const [activeNode, setActiveNode] = useState(null);
@@ -176,6 +163,12 @@ const CircularGraph = () => {
           lineStyle: { color: '#8F59B9' },
           persistent: false,
         });
+        data.links.push({
+          source: targetId,
+          target: sourceId,
+          lineStyle: { color: '#8F59B9' },
+          persistent: false,
+        });
       });
       person.otherSkills.forEach((skill) => {
         let targetId;
@@ -183,6 +176,12 @@ const CircularGraph = () => {
         data.links.push({
           source: sourceId,
           target: targetId,
+          lineStyle: { color: '#FF7A00' },
+          persistent: false,
+        });
+        data.links.push({
+          source: targetId,
+          target: sourceId,
           lineStyle: { color: '#FF7A00' },
           persistent: false,
         });
@@ -242,7 +241,11 @@ const CircularGraph = () => {
                     opacity: isPersonCategory ? 1 : isConnectedToActiveNode ? 1 : 0.3,
                   },
                   itemStyle: {
-                    color: isLinked ? '#FF7A00' : node.itemStyle.color,
+                    color: isLinked
+                      ? isPersonCategory
+                        ? '#00A372'
+                        : '#FF7A00'
+                      : node.itemStyle.color,
                     borderWidth: isActive ? 4 : 0,
                   },
                 };
@@ -280,9 +283,7 @@ const CircularGraph = () => {
             itemStyle: {
               color: '#ffcc00',
             },
-
             lineStyle: {
-              // color: '#FF7A00',
               curveness: 0.3,
               width: 2,
               smooth: true,
@@ -308,6 +309,19 @@ const CircularGraph = () => {
         });
         setCurrentVisibleLinks(linksForPerson);
 
+        updateChart();
+      } else if (params.data && params.data.category === 'skill') {
+        const skillName = params.data.name;
+
+        setActiveNode(skillName); // Устанавливаем активный узел
+        const skillId = data.nodes.find(
+          (node) => node.name === skillName && node.category === 'skill',
+        );
+        const linksForSkill = data.links.filter((link) => {
+          return link.source === skillId.id.toString();
+        });
+
+        setCurrentVisibleLinks(linksForSkill);
         updateChart();
       } else {
         setActiveNode(null); // Сбрасываем активный узел
